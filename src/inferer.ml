@@ -15,15 +15,14 @@ let type_of (ae : aexpr) : typ =
     | AVar (_, a) -> a
     | AFun (_, _, a) -> a
     | AApp (_, _, a) -> a
-    | ABool _ -> TBool
-    | AInt _ -> TInt
+    | AConst (ConstBool _) -> TBool
+    | AConst (ConstInt _) -> TInt
 
 (* annotate all subexpressions with types *)
 (* bv = stack of bound variables for which current expression is in scope *)
 (* fv = hashtable of known free variables *)
 let annotate (e : expr) : aexpr =
     let (h : (id, typ) Hashtbl.t) = Hashtbl.create 17 in
-
     let rec annotate' (e : expr) (bv : (id * typ) list) : aexpr =
         match e with
         | Var x ->
@@ -48,7 +47,6 @@ let annotate (e : expr) : aexpr =
             AApp (annotate' e1 bv, annotate' e2 bv, next_type_var())
         | Const c -> AConst c
         in annotate' e []
-
 (* collect constraints for unification *)
 (* let collect (aexprs : aexpr list) : (typ * typ) list =  *)
 let rec collect' (aexprs : aexpr list) (u : (typ * typ) list) : (typ * typ) list =
@@ -61,5 +59,4 @@ let rec collect' (aexprs : aexpr list) (u : (typ * typ) list) : (typ * typ) list
         collect' (ae1 :: ae2 :: r) ((f, Arrow (b, a)) :: u)
     | _ -> u
 (* in collect' aexprs []  *)
-
-let infer (e : expr) : typ = failwith "Not implemented"
+let infer (e : expr) : typ = failwith "Not implemented" 
