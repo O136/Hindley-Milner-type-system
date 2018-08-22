@@ -47,8 +47,9 @@ let annotate (e : expr) : aexpr =
             AApp (annotate' e1 bv, annotate' e2 bv, next_type_var())
         | Const c -> AConst c
         in annotate' e []
+
 (* collect constraints for unification *)
-(* let collect (aexprs : aexpr list) : (typ * typ) list =  *)
+let collect (aexprs : aexpr list) : (typ * typ) list = 
 let rec collect' (aexprs : aexpr list) (u : (typ * typ) list) : (typ * typ) list =
   match aexprs with
     | [] -> u
@@ -58,5 +59,9 @@ let rec collect' (aexprs : aexpr list) (u : (typ * typ) list) : (typ * typ) list
         let (f, b) = (type_of ae1, type_of ae2) in
         collect' (ae1 :: ae2 :: r) ((f, Arrow (b, a)) :: u)
     | _ -> u
-(* in collect' aexprs []  *)
+in collect' aexprs [] 
+
+let test_expr = 
+    Fun ("x", (App ((Var "x"), (Const (ConstInt 2)))));;(*fun x -> x 2*)
+
 let infer (e : expr) : typ = failwith "Not implemented" 
