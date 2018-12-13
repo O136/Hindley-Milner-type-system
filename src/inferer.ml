@@ -21,6 +21,13 @@ let type_of (ae : aexpr) : typ =
 (* annotate all subexpressions with types *)
 (* bv = stack of bound variables for which current expression is in scope *)
 (* fv = hashtable of known free variables *)
+(* These rules impose constraints as follows.  
+   Suppose we want to do type inference on a given expression e.  
+   We first assign unique type variables 'a, ...
+
+    one to each variable x occurring in e, and
+    one to each occurrence of each subexpression of e.
+ *)
 let annotate (e : expr) : aexpr =
     let (h : (id, typ) Hashtbl.t) = Hashtbl.create 17 in
     let rec annotate' (e : expr) (bv : (id * typ) list) : aexpr =
@@ -64,4 +71,10 @@ in collect' aexprs []
 let test_expr = 
     Fun ("x", (App ((Var "x"), (Const (ConstInt 2)))));;(*fun x -> x 2*)
 
-let infer (e : expr) : typ = failwith "Not implemented" 
+(* collect the constraints and perform unification *)
+(* let infer (e : expr) : typ =
+  reset_type_vars();
+  let ae = annotate e in
+  let cl = collect [ae] in
+  let s = Unify.unify cl in
+  Unify.apply s (type_of ae) *)
